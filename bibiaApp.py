@@ -44,19 +44,10 @@ def faz_busca():
 
     termo = termo.rstrip().lstrip()
     resultado = procura_termo(termo, cur)
-    html = '''<!DOCTYPE html>
-                    <html>
-                      <head>
-                        <meta charset="utf-8">
-                        <title>''' + termo + '''</title>
-                      </head>
-                      <body>'''
-
-    html += lista_resultado(resultado, termo)
-    html += buscar()
-    html += "</body></html>"
+    lista_livros = retorna_livros(cur)
+    temp = template("termo", records=resultado, termo=termo, livros=lista_livros)
     cur.close()
-    return html
+    return temp
 
     # https://www.sqlite.org/lang_select.html
 
@@ -110,6 +101,18 @@ def retorna_capitulo(idbook, cap, cur):
     V.book_id) WHERE B.id = ? AND  V.chapter = ? ORDER BY V.verse ''', (idbook, cap))
 
     # row = cur.fetchone()
+    records = cur.fetchall()
+    return records
+
+
+def retorna_livros(cur):
+    # 0 testament
+    # 1 book_reference_id
+    # 2 name
+    # 3 abv
+    # 4 tcaps
+    cur.execute('''Select CASE WHEN testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END 
+      as testament,  book_reference_id, name, abv, tcaps FROM book ORDER BY book_reference_id ''')
     records = cur.fetchall()
     return records
 
