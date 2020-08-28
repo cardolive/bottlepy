@@ -29,11 +29,12 @@
   % else:
     <p> Não foi encontrado nenhum versículo com o termo '{{termo}}'</p>
   <% end
-    include('index.tpl')
-       for lv in livros:
+    end
   %>
-            <a href="/livro?idbook={{lv[1]}}">{{lv[2]}}&nbsp;</a>
-  <%   end
-  end %>
+      <fieldset>
+          <legend>Busca:</legend>
+          % include('procura.tpl')
+      </fieldset>
+      <p></p>
   </body>
 </html>
