@@ -57,7 +57,7 @@ def lista_capitulos():
     idbook = request.query.idbook
     caps = request.query.caps
     nome_livro = request.query.nome
-    print(idbook, nome_livro, caps)
+    # print(idbook, nome_livro, caps)
     temp = template("livro", caps=caps, nome=nome_livro, idbook=idbook)
     return temp
 

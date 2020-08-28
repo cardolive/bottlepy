@@ -9,7 +9,7 @@
      <p>Capítulos</p>
      <p>
   % for c in range(int(caps)):
-     {{c+1}}&nbsp;
+    <a href="/versiculo?idbook={{idbook}}&cap={{c+1}}">{{c+1}}&nbsp;</a>
   % end
     </p>
   </body>
