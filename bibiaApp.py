@@ -52,6 +52,16 @@ def faz_busca():
     # https://www.sqlite.org/lang_select.html
 
 
+@route('/livro', method='GET')
+def lista_capitulos():
+    idbook = request.query.idbook
+    caps = request.query.caps
+    nome_livro = request.query.nome
+    print(idbook, nome_livro, caps)
+    temp = template("livro", caps=caps, nome=nome_livro, idbook=idbook)
+    return temp
+
+
 def procura_termo(strtermo, cur):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END
      as testament, B.name, V.chapter, V.verse, V.text, B.id , B.tcaps
@@ -78,7 +88,7 @@ def versiculo():
     else:
         if bool(idbook) and bool(cap) and not bool(ver):
             resultado = retorna_capitulo(idbook, cap, cur)
-            print("idbook=", resultado[0][5], "cap=", resultado[0][3], "total=", resultado[0][6])
+           # print("idbook=", resultado[0][5], "cap=", resultado[0][3], "total=", resultado[0][6])
             temp = template("capitulo", records=resultado)
 
     cur.close()
@@ -118,6 +128,7 @@ def retorna_livros(cur):
 
 
 def lista_resultado(resultado, termo):
+    row = None
     tes = ''
     livro = ''
     str_html = "<p>Foram encontrados " + str(len(resultado)) + " versículos com o termo: " + termo + "</p>"
@@ -129,11 +140,9 @@ def lista_resultado(resultado, termo):
         if row[1] != livro:
             str_html += "<h2><b>" + str(row[1]) + "</b></h2>"
             livro = str(row[1])
-        #       str_html += "<ul><li>" + str(row[2]) + " :" + str(row[3]) + " " + str(row[4]) + "</li></ul>"
-        str_html += "<ul><li><a href='/versiculo?idbook=" + str(row[5]) + "&cap=" + str(row[2]) + "&ver=" + str(
-            row[3]) + "'>" \
-                    + str(row[2]) + ":" + str(row[3]) + "</a> " + str(row[4]) + "</li></ul>"
-        # = <a href="/versiculo/?idbook=&cap=&ver=">texto</a>
+    str_html += "<ul><li><a href='/versiculo?idbook=" + str(row[5]) + "&cap=" + str(row[2]) + "&ver=" + str(
+        row[3]) + "'>" + str(row[2]) + ":" + str(row[3]) + "</a> " + str(row[4]) + "</li></ul>"
+    # = <a href="/versiculo/?idbook=&cap=&ver=">texto</a>
     str_html += "<p></p>"
     return str_html
 
