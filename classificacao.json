@@ -1,0 +1,14 @@
+[{"titulo" : "Pentateuco", "livros" : ["Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio"], "ids" :
+[1,2,3,4,5]},{"titulo" : "Livros Históricos", "livros" : ["Josué", "Juízes", "Rute", "I Samuel", "II Samuel", "I Reis", "II Reis", "I Crônicas", "II Crônicas", "Esdras", "Neemias","Ester"], "ids" : [6,7,8,9,10,11,12,13,14,15,16,17]}
+,{"titulo" : "Livros Poéticos", "livros" : ["Jó", "Salmos", "Provérbios", "Eclesiastes", "Canticos"], "ids" : [18,19,20,21,22]}
+,{"titulo" : "Profetas Maiores", "livros" : ["Isaías", "Jeremias", "Lamentações", "Ezequiel", "Daniel"], "ids" :
+[23,24,25,26,27]}
+,{"titulo" : "Profetas Menores", "livros" : ["Oseias", "Joel", "Amós", "Obadias", "Jonas", "Miqueias", "Naum", "Habacuque",
+"Sofonias", "Ageu", "Zacarias", "Malaquias"], "ids" : [28,29,30,31,32,32,33,34,35,36,37,38,39]}
+,{"titulo" : "Evangelhos", "livros" : ["Mateus", "Marcos", "Lucas", "João"], "ids" : [40,41,42,43]}
+,{"titulo" : "A História da Igreja Primitiva", "livros" : ["Atos dos Apóstolos"], "ids" : [44]}
+,{"titulo" : "Epístolas", "livros" : ["Romanos", "I Coríntios","II Coríntios", "Gálatas", "Efésios", "Felipenses",
+"Colossenses", "I Tessalonicenses", "II Tessalonicenses", "I Timóteo","II Timóteo", "Tito","Filemon", "Hebreus", "Tiago", "I Pedro","II Pedro", "I João", "II João", "III João", "Judas"], "ids" :
+[45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65]}
+,{"titulo" : "Revelação", "livros" : ["Apocalipse"], "ids" : [66]}
+]
