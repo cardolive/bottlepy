@@ -11,6 +11,7 @@ def error404():
 
 @route('/')
 def index():
+    # TODO : colocar a lista de livros no rodapé
     return template("index")
 
 
@@ -44,6 +45,7 @@ def faz_busca():
 
     termo = termo.rstrip().lstrip()
     resultado = procura_termo(termo, cur)
+    # TODO : criar template links de livros
     lista_livros = retorna_livros(cur)
     temp = template("termo", records=resultado, termo=termo, livros=lista_livros)
     cur.close()
