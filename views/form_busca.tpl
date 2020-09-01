@@ -12,6 +12,5 @@
             <input value="Buscar" type="submit" />
     </form>
     <p></p>
-    % include('lista_livros.tpl')
   </body>
 </html>

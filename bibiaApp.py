@@ -3,6 +3,9 @@ import sqlite3
 
 from bottle import route, run, template, error, get, post, request, redirect
 
+conn = sqlite3.connect('JFAA.sqlite')
+cur = conn.cursor()
+
 
 @error(404)
 def error404():
@@ -11,8 +14,8 @@ def error404():
 
 @route('/')
 def index():
-    # TODO : colocar a lista de livros no rodapé
-    return template("index")
+    lista = retorna_livros()
+    return template("index", livros=lista)
 
 
 # return template(index_html, termo='/buscar')
@@ -37,16 +40,14 @@ def redireciona():
 
 @post('/busca')  # or @route('/login', method='POST')
 def faz_busca():
-    conn = sqlite3.connect('JFAA.sqlite')
-    cur = conn.cursor()
 
     termo = request.forms.get('termo')
     if len(termo) < 1: termo = 'mediador'
 
     termo = termo.rstrip().lstrip()
-    resultado = procura_termo(termo, cur)
+    resultado = procura_termo(termo)
     # TODO : criar template links de livros
-    lista_livros = retorna_livros(cur)
+    lista_livros = retorna_livros()
     temp = template("termo", records=resultado, termo=termo, livros=lista_livros)
     cur.close()
     return temp
@@ -59,12 +60,13 @@ def lista_capitulos():
     idbook = request.query.idbook
     caps = request.query.caps
     nome_livro = request.query.nome
+    capitulo_1 = retorna_capitulo(idbook, 1)
     # print(idbook, nome_livro, caps)
-    temp = template("livro", caps=caps, nome=nome_livro, idbook=idbook)
+    temp = template("livro", caps=caps, nome=nome_livro, idbook=idbook, cap1=capitulo_1)
     return temp
 
 
-def procura_termo(strtermo, cur):
+def procura_termo(strtermo):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END
      as testament, B.name, V.chapter, V.verse, V.text, B.id , B.tcaps
      FROM verse V INNER join book B on (B.id = V.book_id) WHERE V.text like ? 
@@ -77,27 +79,24 @@ def procura_termo(strtermo, cur):
 
 @route('/versiculo')
 def versiculo():
-    conn = sqlite3.connect('JFAA.sqlite')
-    cur = conn.cursor()
     idbook = request.query.idbook
     cap = request.query.cap
     ver = request.query.ver
     # print("idbook=", idbook, "cap=", cap, "ver=", ver)
-    temp = template('index')
+    temp = template("form_busca")
     if bool(idbook) and bool(cap) and bool(ver):
-        resultado = retorna_versiculo(idbook, cap, ver, cur)
+        resultado = retorna_versiculo(idbook, cap, ver)
         temp = template("versiculo", row=resultado)
     else:
         if bool(idbook) and bool(cap) and not bool(ver):
-            resultado = retorna_capitulo(idbook, cap, cur)
-           # print("idbook=", resultado[0][5], "cap=", resultado[0][3], "total=", resultado[0][6])
+            resultado = retorna_capitulo(idbook, cap)
             temp = template("capitulo", records=resultado)
 
     cur.close()
     return temp
 
 
-def retorna_versiculo(idbook, cap, ver, cur):
+def retorna_versiculo(idbook, cap, ver):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END 
     as testament, B.name, V.chapter, V.verse, V.text, B.id , B.tcaps FROM verse V INNER join book B on (B.id = 
     V.book_id) WHERE B.id = ? AND  V.chapter = ? AND V.verse = ? ''', (idbook, cap, ver))
@@ -107,7 +106,7 @@ def retorna_versiculo(idbook, cap, ver, cur):
     return row
 
 
-def retorna_capitulo(idbook, cap, cur):
+def retorna_capitulo(idbook, cap):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END 
     as testament, B.name, V.chapter, V.verse, V.text, B.id, B.tcaps FROM verse V INNER join book B on (B.id = 
     V.book_id) WHERE B.id = ? AND  V.chapter = ? ORDER BY V.verse ''', (idbook, cap))
@@ -117,7 +116,7 @@ def retorna_capitulo(idbook, cap, cur):
     return records
 
 
-def retorna_livros(cur):
+def retorna_livros():
     # 0 testament
     # 1 book_reference_id
     # 2 name
