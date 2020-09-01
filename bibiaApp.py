@@ -4,7 +4,6 @@ import sqlite3
 from bottle import route, run, template, error, get, post, request, redirect
 
 conn = sqlite3.connect('JFAA.sqlite')
-cur = conn.cursor()
 
 
 @error(404)
@@ -14,7 +13,9 @@ def error404():
 
 @route('/')
 def index():
-    lista = retorna_livros()
+    cur = conn.cursor()
+    lista = retorna_livros(cur)
+    cur.close()
     return template("index", livros=lista)
 
 
@@ -40,14 +41,13 @@ def redireciona():
 
 @post('/busca')  # or @route('/login', method='POST')
 def faz_busca():
-
+    cur = conn.cursor()
     termo = request.forms.get('termo')
     if len(termo) < 1: termo = 'mediador'
 
     termo = termo.rstrip().lstrip()
-    resultado = procura_termo(termo)
-    # TODO : criar template links de livros
-    lista_livros = retorna_livros()
+    resultado = procura_termo(termo, cur)
+    lista_livros = retorna_livros(cur)
     temp = template("termo", records=resultado, termo=termo, livros=lista_livros)
     cur.close()
     return temp
@@ -57,16 +57,18 @@ def faz_busca():
 
 @route('/livro', method='GET')
 def lista_capitulos():
+    cur = conn.cursor()
     idbook = request.query.idbook
     caps = request.query.caps
     nome_livro = request.query.nome
-    capitulo_1 = retorna_capitulo(idbook, 1)
+    capitulo_1 = retorna_capitulo(idbook, 1, cur)
     # print(idbook, nome_livro, caps)
     temp = template("livro", caps=caps, nome=nome_livro, idbook=idbook, cap1=capitulo_1)
+    cur.close()
     return temp
 
 
-def procura_termo(strtermo):
+def procura_termo(strtermo, cur):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END
      as testament, B.name, V.chapter, V.verse, V.text, B.id , B.tcaps
      FROM verse V INNER join book B on (B.id = V.book_id) WHERE V.text like ? 
@@ -79,24 +81,24 @@ def procura_termo(strtermo):
 
 @route('/versiculo')
 def versiculo():
+    cur = conn.cursor()
     idbook = request.query.idbook
     cap = request.query.cap
     ver = request.query.ver
     # print("idbook=", idbook, "cap=", cap, "ver=", ver)
     temp = template("form_busca")
     if bool(idbook) and bool(cap) and bool(ver):
-        resultado = retorna_versiculo(idbook, cap, ver)
+        resultado = retorna_versiculo(idbook, cap, ver, cur)
         temp = template("versiculo", row=resultado)
     else:
         if bool(idbook) and bool(cap) and not bool(ver):
-            resultado = retorna_capitulo(idbook, cap)
+            resultado = retorna_capitulo(idbook, cap, cur)
             temp = template("capitulo", records=resultado)
-
     cur.close()
     return temp
 
 
-def retorna_versiculo(idbook, cap, ver):
+def retorna_versiculo(idbook, cap, ver, cur):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END 
     as testament, B.name, V.chapter, V.verse, V.text, B.id , B.tcaps FROM verse V INNER join book B on (B.id = 
     V.book_id) WHERE B.id = ? AND  V.chapter = ? AND V.verse = ? ''', (idbook, cap, ver))
@@ -106,7 +108,7 @@ def retorna_versiculo(idbook, cap, ver):
     return row
 
 
-def retorna_capitulo(idbook, cap):
+def retorna_capitulo(idbook, cap, cur):
     cur.execute('''Select CASE WHEN B.testament_reference_id = 1 THEN 'Velho Testamento' ELSE 'Novo Testamento' END 
     as testament, B.name, V.chapter, V.verse, V.text, B.id, B.tcaps FROM verse V INNER join book B on (B.id = 
     V.book_id) WHERE B.id = ? AND  V.chapter = ? ORDER BY V.verse ''', (idbook, cap))
@@ -116,7 +118,7 @@ def retorna_capitulo(idbook, cap):
     return records
 
 
-def retorna_livros():
+def retorna_livros(cur):
     # 0 testament
     # 1 book_reference_id
     # 2 name
@@ -126,26 +128,6 @@ def retorna_livros():
       as testament,  book_reference_id, name, abv, tcaps FROM book ORDER BY book_reference_id ''')
     records = cur.fetchall()
     return records
-
-
-def lista_resultado(resultado, termo):
-    row = None
-    tes = ''
-    livro = ''
-    str_html = "<p>Foram encontrados " + str(len(resultado)) + " versículos com o termo: " + termo + "</p>"
-
-    for row in resultado:
-        if row[0] != tes:
-            str_html += "<hr><p align='center'>" + str(row[0]) + "</p><hr>"
-            tes = str(row[0])
-        if row[1] != livro:
-            str_html += "<h2><b>" + str(row[1]) + "</b></h2>"
-            livro = str(row[1])
-    str_html += "<ul><li><a href='/versiculo?idbook=" + str(row[5]) + "&cap=" + str(row[2]) + "&ver=" + str(
-        row[3]) + "'>" + str(row[2]) + ":" + str(row[3]) + "</a> " + str(row[4]) + "</li></ul>"
-    # = <a href="/versiculo/?idbook=&cap=&ver=">texto</a>
-    str_html += "<p></p>"
-    return str_html
 
 
 # @route('/busca/<termo:re:[a-z]+>')
