@@ -31,5 +31,6 @@
       </fieldset>
        <p></p>
   % include('lista_livros.tpl')
+    <p><a href="/">Voltar para o início</a></p>
    </body>
 </html>

@@ -19,5 +19,6 @@
    % else:
     <p> Pesquisa vazia</p>
    % end
+     <p><a href="/">Voltar para o início</a></p>
   </body>
 </html>

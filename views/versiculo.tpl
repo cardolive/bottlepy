@@ -13,5 +13,6 @@
     % for c in range(row[6]):
         <a href="/versiculo?idbook={{row[5]}}&cap={{c+1}}">{{c+1}}&nbsp;</a>
     % end
+      <p><a href="/">Voltar para o início</a></p>
   </body>
 </html>

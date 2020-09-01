@@ -20,5 +20,6 @@
     <a href="/versiculo?idbook={{idbook}}&cap={{c+1}}">{{c+1}}&nbsp;</a>
   % end
     </p>
+  <p><a href="/">Voltar para o início</a></p>
   </body>
 </html>
