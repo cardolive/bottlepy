@@ -6,12 +6,16 @@
   </head>
   <body>
   % if len(records) > 0:
-    <p>{{records[0][1]}} {{records[0][2]}} </p>
-    <p style="text-align:justify">
+    <div style="overflow-x:auto;">
+    <table border='0' style='width:80%; align='center'>
+    <tr><th>{{records[0][1]}} {{records[0][2]}}<th></tr>
+    <tr>
+    <td style="text-align:justify">
     % for row in records:
         <sup>{{row[3]}}</sup> {{row[4]}}
     % end
-    </p>
+    </td></tr></table>
+    </div>
     <p>Capítulos: {{records[0][6]}} </p>
     % for c in range(records[0][6]):
         <a href="/versiculo?idbook={{records[0][5]}}&cap={{c+1}}">{{c+1}}&nbsp;</a>
